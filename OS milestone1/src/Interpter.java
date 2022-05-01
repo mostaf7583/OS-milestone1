@@ -80,7 +80,7 @@ public class Interpter {
     }
 
     public static void main(String[] args) throws Exception {
-       String expression = "I am fool";
+       String expression = "I am a student";
         String[] arr = expression.split(" ");
         //print array
         for (int i = 0; i < arr.length; i++) {
