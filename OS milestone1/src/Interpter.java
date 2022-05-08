@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Interpter {
+    static Mutex m1 ;
+    public Interpter() 
+    {
+        m1 = new Mutex();
+    }
     // read data from file
     public static void readFile(String fileName) {
         try {
@@ -14,6 +19,7 @@ public class Interpter {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line;
             while ((line = bufferedReader.readLine()) != null) {
+                program_syntax(line);   //running the program sys
                 System.out.println(line);
             }
             bufferedReader.close();
@@ -30,6 +36,8 @@ public class Interpter {
             return a;
         }
     }
+    
+
 
     // write data to file
     public static void writeFile(String fileName, String data) {
@@ -46,23 +54,37 @@ public class Interpter {
     public static void program_syntax(String expression) {
         String[] arr = expression.split(" ");
         String [] var = new String[3];
+        
+
         switch (arr[0]) {
             case "print":
-                System.out.println(arr[1]);
-                break;
-            // code block
+            if(m1.getOutput()==1){
+                m1.setOutput(0);//sem wait
+                for(int i = 1; i < arr.length; i++)
+                    System.out.print(arr[i] + " ");
+                System.out.println();
+                m1.setOutput(1);
+             }
+              break;
+
+            
             case "assign":
+             if (m1.getAccess() == 1) {
+                m1.
                 var[0] = arr[1];
+            }
                 break;
-            // code block
-            case "writefile":
+            
+            case "writeFile":
+            m1.setAccess(0);    
                 writeFile(arr[1], arr[2]);
+
                 break;
-            // code block
+            
             case "read":
                 readFile(arr[1]);
                 break;
-            case "printfromto":
+            case "printFromTo":
             // convert from String to int
                 int from = Integer.parseInt(arr[1]);
                 int to = Integer.parseInt(arr[2]);
@@ -70,23 +92,13 @@ public class Interpter {
                     System.out.println(i);
                 }
                 break;
-            case "semwait":
+            case "semWait":
                 System.out.println("semwait");
                 break;
-            case "semsignal":
+            case "semSignal":
                 System.out.println("semsignal");
                 break;
         }
     }
-
-    public static void main(String[] args) throws Exception {
-       String expression = "I am a student";
-        String[] arr = expression.split(" ");
-        //print array
-        for (int i = 0; i < arr.length; i++) {
-            System.out.println(arr[i]);
-        }
-        takeTxt();
-        readFile("Program_1.txt");
-    }
+ 
 }
