@@ -1,7 +1,9 @@
 public class main {
     public static void main(String[] args) {
-        
-        Interpter i = new Interpter();
-        System.out.println("mohamed");
+        process p = new process();
+        p.getVariables().put("key", "value");
+        p.getVariables().put("key2", "5");
+
+        System.out.println(p.getVariables().get("key"));
     }
 }

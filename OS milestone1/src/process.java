@@ -8,7 +8,12 @@ public class process {
     private HashMap<String,String>variables= new HashMap<String,String>();
     
     
-    
+    public HashMap<String, String> getVariables() {
+        return variables;
+    }
+    public void setVariables(HashMap<String, String> variables) {
+        this.variables = variables;
+    }
 
     public int getPid() {
         return pid;
