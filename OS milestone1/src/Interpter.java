@@ -58,25 +58,25 @@ public class Interpter {
 
         switch (arr[0]) {
             case "print":
-            if(m1.getOutput()==1){
-                m1.setOutput(0);//sem wait
+            if(m1.getUserInput()==1){
+                m1.setUserInput(0);//sem wait
                 for(int i = 1; i < arr.length; i++)
                     System.out.print(arr[i] + " ");
                 System.out.println();
-                m1.setOutput(1);
+                m1.setUserOutput(1);
              }
               break;
 
             
             case "assign":
-             if (m1.getAccess() == 1) {
+             if (m1.getFile() == 1) {
                 ///seif
                 var[0] = arr[1];
             }
                 break;
             
             case "writeFile":
-            m1.setAccess(0);    
+            m1.setFile(0);    
                 writeFile(arr[1], arr[2]);
 
                 break;
