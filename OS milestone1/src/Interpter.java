@@ -69,16 +69,17 @@ public class Interpter {
         HashMap<String,String>variables= new HashMap<String,String>();
 
         switch (arr[0]) {
-            case "print":
-            if(m1.getUserInput()==1){
-                m1.setUserInput(0);//sem wait
-                for(int i = 1; i < arr.length; i++)
-                    System.out.print(arr[i] + " ");
-                System.out.println();
-                m1.setUserOutput(1);
-             }
-              break;
-
+            case "print": 
+            if (m1.getUserOutput() == 0) {
+                break;
+            }
+            else {
+             m1.setUserOutput(0); 
+             System.out.println(p.getVariables().get(arr[1]));
+             System.out.println();
+             m1.setUserOutput(1);  
+             break ;
+            }
             
             case "assign":                       // assign a b
              if (m1.getFile() == 1) {
@@ -97,8 +98,7 @@ public class Interpter {
             
             case "writeFile":
             m1.setFile(0);    
-                writeFile(arr[1], arr[2]);
-
+                writeFile(arr[1], p.getVariables().get(arr[2]));
                 break;
             
             case "read":
@@ -106,8 +106,11 @@ public class Interpter {
                 break;
             case "printFromTo":
             // convert from String to int
-                int from = Integer.parseInt(p.getVariables().get(arr[1]));
-                int to = Integer.parseInt(arr[2]);
+            int from ;
+            int to  ;
+        
+                 from = Integer.parseInt(p.getVariables().get(arr[1]));
+                 to  =   Integer.parseInt(p.getVariables().get(arr[2]));
                 for(int i=from; i <= to; i++) {
                     System.out.println(i);
                 }
