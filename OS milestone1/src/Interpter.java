@@ -70,7 +70,7 @@ public class Interpter {
             
             case "assign":
              if (m1.getAccess() == 1) {
-                
+                ///seif
                 var[0] = arr[1];
             }
                 break;
