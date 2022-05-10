@@ -67,7 +67,6 @@ public class Interpter {
     public static void program_syntax(String expression, String fileName) {
         String[] arr = expression.split(" ");
         String[] var = new String[3];
-        HashMap<String, String> variables = new HashMap<String, String>();
 
         switch (arr[0]) {
             case "print":
