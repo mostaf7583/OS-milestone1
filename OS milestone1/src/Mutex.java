@@ -1,8 +1,19 @@
 public class Mutex {
- private int   file=1;//allowing to take
+ private int   file=1; 
  private int   userInput=1;
  private int   userOutput=1;
+ private int ownerid ;
  
+     // Queue<String> blocked = new Queue<String>();
+    // Queue<String> ready = new Queue<String>();
+
+
+public int getOwnerid() {
+    return ownerid;
+}
+public void setOwnerid(int ownerid) {
+    this.ownerid = ownerid;
+}
 public int getUserInput() {
     return userInput;
 }
