@@ -105,12 +105,10 @@ public class Interpter {
                 readFile(arr[1]);
                 break;
             case "printFromTo":
-                // convert from String to int
-                int from;
-                int to;
+            
 
-                from = Integer.parseInt(p.getVariables().get(arr[1]));
-                to = Integer.parseInt(p.getVariables().get(arr[2]));
+                int from = Integer.parseInt(p.getVariables().get(arr[1]));
+                int to = Integer.parseInt(p.getVariables().get(arr[2]));
                 for (int i = from; i <= to; i++) {
                     System.out.println(i);
                 }
