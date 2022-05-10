@@ -9,8 +9,8 @@ import java.util.Queue;
 import java.util.Scanner;
 
 public class Interpter {
-    static Mutex m1;
-    static process p = new process();
+    Mutex userInput, userOutput, file;
+     process p = new process();
 
     // Queue<String> q = new Queue<String>();
     public Interpter(process p) {
@@ -70,8 +70,7 @@ public class Interpter {
 
         switch (arr[0]) {
             case "print":
-                if (m1.getUserOutput() == 0) {
-                    break;
+                
                 } else {
 
                         m1.setUserOutput(0);
@@ -114,56 +113,14 @@ public class Interpter {
                 }
                 break;
             case "semWait":
-                if (var[1] == "userInput") {
-                    if (m1.getUserInput() == 1) {
-                        m1.setOwnerid(p.getPid());
-                        m1.setUserInput(0);
-                    } else {
-                        
-                        /* place this process in m.queue */
-                        /* block this process */
-                        break;
-                    }
-                }
+               
 
-                else if (var[1] == "userOutput") {
-                    if (m1.getUserInput() == 1) {
-                        m1.setOwnerid(p.getPid());
-                        m1.setUserOutput(0);
-                    } else {
-                        /* place this process in m.queue */
-                        /* block this process */
-                        break;
-                    }
-                } else if (var[1] == "file") {
-                    if (m1.getUserInput() == 1) {
-                        m1.setOwnerid(p.getPid());
-                        m1.setFile(0);
-                    } else {
-                        /* place this process in m.queue */
-                        /* block this process */
-                        break;
-                    }
-                }
+                
+
                 System.out.println("semwait");
                 break;
             case "semSignal":
-                if (var[1] == "userInput") {
-                    if (m1.getOwnerid() == p.getPid()) {
-                        /*
-                         * if (m.queue.isEmpty())
-                         * m.value = one;
-                         * else {
-                         * /* remove a process P from m.queue
-                         */
-                        /* place process P on ready list */
-                        /* update ownerID to be equal to Process P’s ID */
-                    }
-                } else if (var[1] == "userOutput") {
-
-                } else if (var[1] == "file") {
-
-                }
+                
                 System.out.println("semsignal");
                 break;
         }

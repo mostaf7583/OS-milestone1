@@ -3,7 +3,7 @@ import java.util.HashMap;
 public class process {
     private int pid;
     private state process_State;
-    private int no_of_instructions;
+    private a
     private int PC;
     private HashMap<String,String>variables= new HashMap<String,String>();
     
