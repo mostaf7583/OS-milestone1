@@ -4,8 +4,6 @@ public class Mutex {
  private int   userOutput=1;
  private int ownerid ;
  
-     // Queue<String> blocked = new Queue<String>();
-    // Queue<String> ready = new Queue<String>();
 
 
 public int getOwnerid() {
