@@ -5,125 +5,159 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
 public class Interpter {
-    Mutex userInput, userOutput, file;
-     process p = new process();
+	private Scanner sc = new Scanner(System.in);
+	private FileReader fileReader;
+	private BufferedReader bufferedReader;
 
-    // Queue<String> q = new Queue<String>();
-    public Interpter(process p) {
-        this.p = p;
-        m1 = new Mutex();
-    }
+	private int timeSlice =2;
+	private int processCount = 0;
+	private int clock = 0;
+	private Mutex userInput, userOutput, file;
+	private Queue<process> readyQueue = new LinkedList<>();
+	private Queue<process> blockedQueue = new LinkedList<>();
+	private Queue<process> pendingQueue = new LinkedList<>();
 
-    // read data from file
-    public static void readFile(String fileName) {
-        try {
-            FileReader fileReader = new FileReader(fileName);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                program_syntax(line, fileName); // running the program sys
-                System.out.println(line);
-            }
-            bufferedReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	private process executingProcess;
+	private SystemCallHandler systemCallHandler = new SystemCallHandler();
+	// Queue<String> q = new Queue<String>();
 
-    // take txt from user
-    public static int takeTxt() {
-        try (Scanner sc = new Scanner(System.in)) {
-            System.out.print("Enter first number- ");
-            int a = sc.nextInt();
-            return a;
-        }
-    }
+	public Interpter() {
+		
+	}
 
-    // write data to file
-    public static void writeFile(String fileName, String data) {
-        try {
-            FileWriter fileWriter = new FileWriter(fileName);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(data);
-            bufferedWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	public static void main(String[] args) {
+		String path;
+		for (int i = 0; i < 3; i++) {
+			System.out.println("please enter the file path of the process and its time of arrival");
 
-    // take input from user
-    public static String takeInput() {
-        try (Scanner sc = new Scanner(System.in)) {
-            System.out.print("Enter first number- ");
-            String a = sc.nextLine();
-            return a;
-        }
-    }
+		}
+	}
 
-    public static void program_syntax(String expression, String fileName) {
-        String[] arr = expression.split(" ");
-        String[] var = new String[3];
+	// read data from file
+	public void createProcess(String path, int timeOfArrival) {
+		try {
+			processCount++;
+			process tempProcess = new process(processCount, timeOfArrival);
+			fileReader = new FileReader(path);
+			bufferedReader = new BufferedReader(fileReader);
+			String line;
 
-        switch (arr[0]) {
-            case "print":
-                
-                } else {
+			while ((line = bufferedReader.readLine()) != null) {
+				tempProcess.getInstructions().add(line.split(" "));
+			}
+			if (timeOfArrival == 0) {
+				readyQueue.add(tempProcess);
+			} else {
+				pendingQueue.add(tempProcess);
+			}
 
-                        m1.setUserOutput(0);
-                        System.out.println(p.getVariables().get(arr[1]));
-                        System.out.println();
-                        m1.setUserOutput(1);
-                    
+			bufferedReader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-                    break;
-                }
+	}
 
-            case "assign": // assign a b
-                if (m1.getFile() == 1) {
-                    if (arr[2] == "input") {
-                        System.out.println("Please enter a value");
-                        p.getVariables().put(arr[1], takeInput()); // put a input in hashmap
+//	// take txt from user
+//	public int takeTxt() {
+//
+//		System.out.print("Enter first number- ");
+//		int a = sc.nextInt();
+//		return a;
+//
+//	}
+//
+//	// write data to file
+//	public void writeFile(String fileName, String data) {
+//		try {
+//			FileWriter fileWriter = new FileWriter(fileName);
+//			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+//			bufferedWriter.write(data);
+//			bufferedWriter.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	// take input from user
+//	public String takeInput() {
+//		try (Scanner sc = new Scanner(System.in)) {
+//			System.out.print("Enter first number- ");
+//			String a = sc.nextLine();
+//			return a;
+//		}
+//	}
 
-                    } else {
-                        p.getVariables().put(arr[1], arr[2]); // put a b in hashmap
-                    }
+	void semWaitB(Mutex m) {
+		if (m.getValue() == true) {
+			m.setOwnerID(executingProcess.getPid());
+			m.setValue(false);
+		} else {
+			/* place this process in m.queue */
+			m.addToWaiting(executingProcess);
+			/* block this process */
+			blockedQueue.add(executingProcess);
+			executingProcess = null;
+		}
+	}
 
-                }
-                break;
+	void semSignalB(Mutex m) {
+		/* check if this process is the owner */
+		if (m.getOwnerID() == executingProcess.getPid()) {
+			if (m.getWaiting().isEmpty()) {
+				m.setValue(true);
+			} else {
+				/* update ownerID to be equal to Process P’s ID */
+				m.setOwnerID(m.getWaiting().peek().getPid());
+				/* remove a process P from m.queue */
+				/* place process P on ready list */
+				blockedQueue.remove(m.getWaiting().peek());
+				readyQueue.add(m.removeFromWaiting());
+				
+			}
+		}
+	}
 
-            case "writeFile":
-                m1.setFile(0);
-                writeFile(arr[1], p.getVariables().get(arr[2]));
-                break;
+	public void executeInstruction(String[] instruction) {
+		switch (instruction[0]) {
+		case "semWait":
+			switch (instruction[1]) {
+			case "userInput":
+				semWaitB(userInput);
+				break;
+			case "userOutput":
+				semWaitB(userOutput);
+				break;
+			case "file":
+				semWaitB(file);
+				break;
 
-            case "read":
-                readFile(arr[1]);
-                break;
-            case "printFromTo":
-            
+			}
+			break;
+		case "semSignal":
+			switch (instruction[1]) {
+			case "userInput":
+				semSignalB(userInput);
+				break;
+			case "userOutput":
+				semSignalB(userOutput);
+				break;
+			case "file":
+				semSignalB(file);
+				break;
 
-                int from = Integer.parseInt(p.getVariables().get(arr[1]));
-                int to = Integer.parseInt(p.getVariables().get(arr[2]));
-                for (int i = from; i <= to; i++) {
-                    System.out.println(i);
-                }
-                break;
-            case "semWait":
-               
+			}
+			break;
+		default:
+			systemCallHandler.handle(instruction, executingProcess);
 
-                
-
-                System.out.println("semwait");
-                break;
-            case "semSignal":
-                
-                System.out.println("semsignal");
-                break;
-        }
-    }
+		}
+	}
 
 }
