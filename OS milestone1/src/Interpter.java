@@ -113,7 +113,7 @@ public class Interpter {
 			if (m.getWaiting().isEmpty()) {
 				m.setValue(true);
 			} else {
-				/* update ownerID to be equal to Process P’s ID */
+				/* update ownerID to be equal to Process Pï¿½s ID */
 				m.setOwnerID(m.getWaiting().peek().getPid());
 				/* remove a process P from m.queue */
 				/* place process P on ready list */
@@ -139,6 +139,7 @@ public class Interpter {
 				break;
 
 			}
+			//ok
 			break;
 		case "semSignal":
 			switch (instruction[1]) {
