@@ -15,9 +15,13 @@ public class SystemCallHandler {
 			break;
 
 		case "assign": // assign a b
-			if (instruction[2]=="input") {
+			if (instruction[2].equals("input")) {
 				System.out.println("please enter a value");
 				instruction[2] = sc.nextLine();
+				executingProcess.decrementPc();
+			}else if (instruction[2].equals("readFile")) {
+				instruction[2] = readFile(instruction[3]);
+				executingProcess.decrementPc();
 			}else {
 				assign(instruction[1],instruction[2], executingProcess);
 			}
@@ -27,15 +31,8 @@ public class SystemCallHandler {
 			writeFile(instruction[1], instruction[2]);
 			break;
 
-		case "read":
+		case "readFile":
 			instruction[1] = readFile(instruction[1]);
-			break;
-		case "printFromTo":
-
-			int from = Integer.parseInt(instruction[1]);
-			int to = Integer.parseInt(instruction[2]);
-			
-			printFromTo(from, to);
 			break;
 		}
 	}
@@ -46,6 +43,10 @@ public class SystemCallHandler {
 	
 	public void print(String text) {
 		System.out.println(text);
+	}
+	
+	public void intPrint(int num) {
+		System.out.println(num);
 	}
 
 	public void assign(String key, String value, process executingProcess) {
@@ -80,9 +81,5 @@ public class SystemCallHandler {
 		return text;
 	}
 
-	public void printFromTo(int start, int end) {
-		for (int i = start; i <= end; i++) {
-			System.out.println(i);
-		}
-	}
+	
 }

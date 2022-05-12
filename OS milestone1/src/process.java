@@ -4,15 +4,17 @@ import java.util.HashMap;
 public class process {
 	private int pid;
 	private int timeOfArrival;
+	private int timeToLive;
 	private ArrayList<String[]> instructions = new ArrayList<>();
-	private int PC = 0;
+	private int pc = 0;
 	private HashMap<String, String> variables = new HashMap<String, String>();
 
 	
 	
-	public process(int pid,int timeOfArrival) {
+	public process(int pid,int timeOfArrival,int timeToLive) {
 		this.pid = pid;
 		this.timeOfArrival = timeOfArrival;
+		this.timeToLive = timeToLive;
 	}
 
 	public HashMap<String, String> getVariables() {
@@ -31,8 +33,12 @@ public class process {
 		this.pid = pid;
 	}
 
-	public int getPC() {
-		return PC;
+	public int getPc() {
+		return pc;
+	}
+
+	public void setPc(int pc) {
+		this.pc = pc;
 	}
 
 	public ArrayList<String[]> getInstructions() {
@@ -52,8 +58,33 @@ public class process {
 	}
 	
 	
+	
+	public int getTimeToLive() {
+		return timeToLive;
+	}
+
+	public void setTimeToLive(int timeToLive) {
+		this.timeToLive = timeToLive;
+	}
+
 	public void addToVariables(String key,String value) {
 		this.variables.put(key, value);
+	}
+	
+	public void addInstruction(String[] instruction) {
+		this.instructions.add(instruction);
+	}
+	
+	public void incrementPc() {
+		this.pc++;
+	}
+	
+	public void decrementPc() {
+		this.pc--;
+	}
+	
+	public void decay() {
+		this.setTimeToLive(this.getTimeToLive() - 1);
 	}
 
 }
