@@ -5,16 +5,18 @@ public class process {
 	private int pid;
 	private int timeOfArrival;
 	private int timeToLive;
+	private String name;
 	private ArrayList<String[]> instructions = new ArrayList<>();
 	private int pc = 0;
 	private HashMap<String, String> variables = new HashMap<String, String>();
 
 	
 	
-	public process(int pid,int timeOfArrival,int timeToLive) {
+	public process(int pid,int timeOfArrival,int timeToLive,String name) {
 		this.pid = pid;
 		this.timeOfArrival = timeOfArrival;
 		this.timeToLive = timeToLive;
+		this.name = name;
 	}
 
 	public HashMap<String, String> getVariables() {
@@ -65,6 +67,14 @@ public class process {
 
 	public void setTimeToLive(int timeToLive) {
 		this.timeToLive = timeToLive;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void addToVariables(String key,String value) {

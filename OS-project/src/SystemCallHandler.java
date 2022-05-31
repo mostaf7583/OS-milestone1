@@ -1,8 +1,4 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 public class SystemCallHandler {
@@ -11,7 +7,7 @@ public class SystemCallHandler {
 	public void handle(String[] instruction, process executingProcess) {
 		switch (instruction[0]) {
 		case "print":
-			print(instruction[1]);
+			print(executingProcess.getVariables().get(instruction[1]));
 			break;
 
 		case "assign": // assign a b
@@ -20,7 +16,8 @@ public class SystemCallHandler {
 				instruction[2] = sc.nextLine();
 				executingProcess.decrementPc();
 			}else if (instruction[2].equals("readFile")) {
-				instruction[2] = readFile(instruction[3]);
+				
+				instruction[2] = readFile(executingProcess.getVariables().get(instruction[3]));
 				executingProcess.decrementPc();
 			}else {
 				assign(instruction[1],instruction[2], executingProcess);
@@ -28,7 +25,7 @@ public class SystemCallHandler {
 			break;
 
 		case "writeFile":
-			writeFile(instruction[1], instruction[2]);
+			writeFile(executingProcess.getVariables().get(instruction[1]), executingProcess.getVariables().get(instruction[2]));
 			break;
 
 		case "readFile":
@@ -42,6 +39,7 @@ public class SystemCallHandler {
 	
 	
 	public void print(String text) {
+		
 		System.out.println(text);
 	}
 	
@@ -67,15 +65,14 @@ public class SystemCallHandler {
 	public String readFile(String fileName) {
 		String text = "";
 		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			while ((bufferedReader.readLine()) != null) {
-				text += bufferedReader.readLine();
-			}
+			File f = new File(fileName);
+			Scanner myReader = new Scanner(f);
+			while (myReader.hasNextLine()) {
+        		text += myReader.nextLine();
+     	 	}
+			myReader.close();
 
-			bufferedReader.close();
-
-		} catch (IOException e) {
+		} catch (FileNotFoundException  e) {
 			e.printStackTrace();
 		}
 		return text;

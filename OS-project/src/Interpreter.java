@@ -21,7 +21,7 @@ public class Interpreter {
 	private Mutex userInput = new Mutex();
 	private Mutex userOutput = new Mutex();
 	private Mutex file = new Mutex();
-	
+
 	private Queue<process> readyQueue = new LinkedList<>();
 	private Queue<process> blockedQueue = new LinkedList<>();
 	private ArrayList<process> pendingList = new ArrayList<>();
@@ -29,38 +29,36 @@ public class Interpreter {
 	private process executingProcess;
 	private SystemCallHandler systemCallHandler = new SystemCallHandler();
 	private Scheduler scheduler = new Scheduler();
-		
-	
-	// Queue<String> q = new Queue<String>();
+
 
 	public Interpreter() {
 		initialize();
+
 		run();
 	}
 
 	public static void main(String[] args) {
-		
+
 		new Interpreter();
-		
+
 	}
-	
+
 	public void initialize() {
 		file.setValue(true);
 		userInput.setValue(true);
 		userOutput.setValue(true);
-		
-		
+
 		String choice;
-		
+
 		System.out.println("the default for number of programs is 3,do you want to change it? (y/n) ");
 		choice = sc.nextLine();
-		System.out.println(choice);
+
 		if (choice.equals("y")) {
 			System.out.println("please enter your number of programs");
 			processCount = sc.nextInt();
 			sc.nextLine();
 		}
-		
+
 		System.out.println("the default time slice is 2,do you want to change it? (y/n) ");
 		choice = sc.nextLine();
 		if (choice.equals("y")) {
@@ -68,7 +66,7 @@ public class Interpreter {
 			timeSlice = sc.nextInt();
 			sc.nextLine();
 		}
-		
+
 		String path;
 		int timeOfArrival;
 		for (int i = 1; i <= processCount; i++) {
@@ -80,23 +78,57 @@ public class Interpreter {
 			timeOfArrival = sc.nextInt();
 			sc.nextLine();
 			System.out.println();
-			
+
 			createProcess(path, timeOfArrival, i, timeSlice);
 		}
 	}
-	
+
 	public void run() {
 		while (!(readyQueue.isEmpty() && blockedQueue.isEmpty() && pendingList.isEmpty() && executingProcess == null)) {
-			System.out.println("clock:" + clock);
-			executingProcess = scheduler.schedule(this, timeSlice, readyQueue, blockedQueue, pendingList, executingProcess);
-			executeInstruction(executingProcess.getInstructions().get(executingProcess.getPc()));
+			System.out.println("clock :- " + clock);
+			executingProcess = scheduler.schedule(this, timeSlice, readyQueue, blockedQueue, pendingList,
+					executingProcess);
+			if (executingProcess != null) {
+
+				StringBuffer sb = new StringBuffer(executingProcess.getName());
+				sb.deleteCharAt(sb.length() - 1);
+				sb.deleteCharAt(sb.length() - 1);
+				sb.deleteCharAt(sb.length() - 1);
+				sb.deleteCharAt(sb.length() - 1);
+
+				System.out.println("currently executing process :-  " + sb);
+				System.out.println("currently executing instruction :-  "
+						+ String.join(" ", executingProcess.getInstructions().get(executingProcess.getPc())));
+				executeInstruction(executingProcess.getInstructions().get(executingProcess.getPc()));
+				if (executingProcess != null && executingProcess.getPc() == executingProcess.getInstructions().size()) {
+					System.out.println("process finished");
+					System.out.print("ready queue :- ");
+					for (process p : readyQueue) {
+						System.out.print(p.getName() + ", ");
+					}
+					System.out.println();
+					System.out.print("blocked queue :- ");
+					for (process p : blockedQueue) {
+						System.out.print(p.getName() + ", ");
+					}
+					System.out.println();
+					System.out.println("pending list  :- ");
+					for (process p : pendingList) {
+						System.out.println(p.getName() + " ");
+					}
+					System.out.println();
+				}
+			} else {
+				System.out.println("No process currently executing");
+			}
 			clock++;
+			System.out.println("--------------------------------------------------");
 		}
 	}
 
 	public void createProcess(String path, int timeOfArrival, int pid, int timeToLive) {
 		try {
-			process tempProcess = new process(pid, timeOfArrival, timeToLive);
+			process tempProcess = new process(pid, timeOfArrival, timeToLive, path);
 			fileReader = new FileReader(path);
 			bufferedReader = new BufferedReader(fileReader);
 			String line;
@@ -112,43 +144,13 @@ public class Interpreter {
 
 			bufferedReader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
 	}
 
-//	// take txt from user
-//	public int takeTxt() {
-//
-//		System.out.print("Enter first number- ");
-//		int a = sc.nextInt();
-//		return a;
-//
-//	}
-//
-//	// write data to file
-//	public void writeFile(String fileName, String data) {
-//		try {
-//			FileWriter fileWriter = new FileWriter(fileName);
-//			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-//			bufferedWriter.write(data);
-//			bufferedWriter.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	// take input from user
-//	public String takeInput() {
-//		try (Scanner sc = new Scanner(System.in)) {
-//			System.out.print("Enter first number- ");
-//			String a = sc.nextLine();
-//			Return a;
-//		}
-//	}
-	
-	
+
 	public void printFromTo(int start, int end) {
 		for (int i = start; i <= end; i++) {
 			systemCallHandler.intPrint(i);
@@ -164,6 +166,25 @@ public class Interpreter {
 			m.addToWaiting(executingProcess);
 			/* block this process */
 			blockedQueue.add(executingProcess);
+			
+			//printing
+			System.out.println("process blocked");
+			System.out.print("ready queue :- ");
+			for (process p : readyQueue) {
+				System.out.print(p.getName() + ", ");
+			}
+			System.out.println();
+			System.out.print("blocked queue :- ");
+			for (process p : blockedQueue) {
+				System.out.print(p.getName() + ", ");
+			}
+			System.out.println();
+			System.out.println("pending list  :- ");
+			for (process p : pendingList) {
+				System.out.println(p.getName() + " ");
+			}
+			System.out.println();
+
 			executingProcess = null;
 		}
 	}
@@ -180,7 +201,7 @@ public class Interpreter {
 				/* place process P on ready list */
 				blockedQueue.remove(m.getWaiting().peek());
 				readyQueue.add(m.removeFromWaiting());
-				
+
 			}
 		}
 	}
@@ -225,7 +246,7 @@ public class Interpreter {
 			systemCallHandler.handle(instruction, executingProcess);
 
 		}
-		
+
 	}
 
 	public int getTimeSlice() {
